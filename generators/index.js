@@ -34,6 +34,7 @@ module.exports = class extends Generator {
 
   writing() {
     const { projectName } = this.answers;
+
     const projectNameLispCase = projectName
         .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
         .replace(/([A-Z])([A-Z])(?=[a-z])/g, '$1-$2')
@@ -42,7 +43,7 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
       this.templatePath('package.json.ejs'),
       this.destinationPath('package.json'),
-      { projectName }
+      { projectName, projectNameLispCase }
     );
 
     this.fs.copyTpl(
@@ -56,5 +57,29 @@ module.exports = class extends Generator {
         this.destinationPath(`cdk-stack/lib/${projectNameLispCase}-stack.ts`),
         { projectName }
     );
+  }
+
+  installingDevDependencies() {
+    this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
+    this.yarnInstall(['@types/jest'], { 'dev': true });
+    this.yarnInstall(['@types/node'], { 'dev': true });
+    this.yarnInstall(['aws-cdk'], { 'dev': true });
+    this.yarnInstall(['aws-lambda'], { 'dev': true });
+    this.yarnInstall(['axios'], { 'dev': true });
+    this.yarnInstall(['babel-jest'], { 'dev': true });
+    this.yarnInstall(['jest'], { 'dev': true });
+    this.yarnInstall(['jsonwebtoken'], { 'dev': true });
+    this.yarnInstall(['jwk-to-pem'], { 'dev': true });
+    this.yarnInstall(['source-map-support'], { 'dev': true });
+    this.yarnInstall(['ts-jest'], { 'dev': true });
+    this.yarnInstall(['ts-node'], { 'dev': true });
+    this.yarnInstall(['typescript'], { 'dev': true });
+  }
+
+  installingDependencies() {
+    this.yarnInstall(['@aws-cdk/core']);
+    this.yarnInstall(['@types/aws-lambda']);
+    this.yarnInstall(['aws-sdk']);
+    this.yarnInstall(['cdkdx']);
   }
 };
