@@ -40,22 +40,6 @@ module.exports = class extends Generator {
           checked: false
         }]
       },
-      /*{
-        type: "confirm",
-        name: "lambdas",
-        message: "Would you like to use AWS Lambda?"
-      },
-      {
-        type: "confirm",
-        name: "dynamodb",
-        message: "Would you like to use DynamoDB?"
-      },
-      ,
-      {
-        type: "confirm",
-        name: "s3",
-        message: "Would you like to use S3?"
-      }*/
     ]);
   }
 
@@ -81,6 +65,11 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
         this.templatePath('tsconfig.json'),
         this.destinationPath('tsconfig.json'),
+    );
+
+    this.fs.copyTpl(
+        this.templatePath('.gitignore'),
+        this.destinationPath('.gitignore'),
     );
 
     this.fs.copyTpl(
@@ -113,10 +102,15 @@ module.exports = class extends Generator {
 
     resources.includes('lambda') && this.fs.copyTpl(
         this.templatePath('src/lambdas/example-lambda/index.ts.ejs'),
-        this.destinationPath(`src/lambdas/example-lambda/index.ts`)
+        this.destinationPath(`src/lambdas/example-lambda/index.ts`),
+    );
+
+    resources.includes('lambda') && this.fs.copyTpl(
+        this.templatePath('src/lambdas/tsconfig.json'),
+        this.destinationPath(`src/lambdas/tsconfig.json`),
     );
   }
-  /*
+
   installingDevDependencies() {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
@@ -140,5 +134,5 @@ module.exports = class extends Generator {
     this.yarnInstall(['aws-sdk']);
     this.yarnInstall(['cdkdx']);
   }
-  */
+
 };
