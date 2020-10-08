@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-<% if (resources.includes('dynamodb')) { %>import { AttributeType, BillingMode, Table as DynamoDbTable } from '@aws-cdk/aws-dynamodb';<% } %>
-<% if (resources.includes('s3')) { %>import { Bucket } from '@aws-cdk/aws-s3';<% } %>
-<% if (resources.includes('dynamodb') || resources.includes('s3')) { %>import { RemovalPolicy } from '@aws-cdk/core';<% } %>
+<% resources.includes('dynamodb') ? 'import { AttributeType, BillingMode, Table as DynamoDbTable } from "@aws-cdk/aws-dynamodb";' : '' -%>
+<% resources.includes('s3') ? 'import { Bucket } from "@aws-cdk/aws-s3"' : '' -%>
+<% resources.includes('dynamodb') || resources.includes('s3') ? 'import { RemovalPolicy } from "@aws-cdk/core";' : '' -%>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
