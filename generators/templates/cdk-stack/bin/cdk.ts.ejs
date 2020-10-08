@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import 'source-map-support/register';
+import { App } from '@aws-cdk/core';
+import { <%= projectName %>Stack } from '../lib/<%= projectNameLispCase %>-stack';
+
+const app = new App();
+
+const stage = process.env.STAGE || 'dev';
+
+new ZimmermannDiscountStack(app, `<%= projectNameLispCase %>-${stage}`);
