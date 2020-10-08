@@ -21,15 +21,17 @@ module.exports = class extends Generator {
           }
           return true;
         }
+      },
+      {
+        type: "confirm",
+        name: "lambdas",
+        message: "Would you like to use AWS Lambda?"
       }
     ]);
   }
 
   async gettingInfos() {
     console.log("Fetching information...");
-
-    // get cdk version (latest)....
-    console.log(await latestVersion('@aws-cdk/core'));
   }
 
   writing() {
