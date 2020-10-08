@@ -47,6 +47,11 @@ module.exports = class extends Generator {
     );
 
     this.fs.copyTpl(
+        this.templatePath('tsconfig.json'),
+        this.destinationPath('tsconfig.json'),
+    );
+
+    this.fs.copyTpl(
         this.templatePath('cdk-stack/bin/cdk.ts.ejs'),
         this.destinationPath(`cdk-stack/bin/${projectNameLispCase}.ts`),
         { projectName, projectNameLispCase }

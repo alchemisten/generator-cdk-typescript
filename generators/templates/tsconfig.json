@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": [ "dom" ],
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "cdk.out",
+    "node_modules",
+    "typings",
+    "**/*.test.ts"
+  ]
+}
