@@ -23,6 +23,24 @@ module.exports = class extends Generator {
         }
       },
       {
+        type: 'checkbox',
+        name: 'resources',
+        message: 'Which aws resources you want to use?',
+        choices: [{
+          name: 'Lambdas',
+          value: 'lambda',
+          checked: false
+        }, {
+          name: 'DynamoDB',
+          value: 'dynamodb',
+          checked: false
+        }, {
+          name: 'Simple Cloud Storage (S3)',
+          value: 's3',
+          checked: false
+        }]
+      },
+      /*{
         type: "confirm",
         name: "lambdas",
         message: "Would you like to use AWS Lambda?"
@@ -37,16 +55,17 @@ module.exports = class extends Generator {
         type: "confirm",
         name: "s3",
         message: "Would you like to use S3?"
-      }
+      }*/
     ]);
   }
 
   async gettingInfos() {
     console.log("Fetching information...");
+    console.log(this.answers);
   }
 
   writing() {
-    const { projectName, lambdas, dynamodb, s3 } = this.answers;
+    const { projectName, resources } = this.answers;
 
     const projectNameLispCase = projectName
         .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -77,7 +96,7 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
         this.templatePath('cdk.json.ejs'),
         this.destinationPath('cdk.json'),
-        { projectNameLispCase, dynamodb, s3 }
+        { projectNameLispCase, resources }
     );
 
     this.fs.copyTpl(
@@ -89,10 +108,10 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
         this.templatePath('cdk-stack/lib/stack.ts.ejs'),
         this.destinationPath(`cdk-stack/lib/${projectNameLispCase}-stack.ts`),
-        { projectName, dynamodb, s3 }
+        { projectName, resources }
     );
 
-    lambdas && this.fs.copyTpl(
+    resources.includes('lambda') && this.fs.copyTpl(
         this.templatePath('src/lambdas/example-lambda/index.ts.ejs'),
         this.destinationPath(`src/lambdas/example-lambda/index.ts`)
     );

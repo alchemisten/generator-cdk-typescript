@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-<% if (dynamodb) { %>import { AttributeType, BillingMode, ProjectionType, Table as DynamoDbTable } from '@aws-cdk/aws-dynamodb';<% } %>
-<% if (s3) { %>import { Bucket } from '@aws-cdk/aws-s3';<% } %>
+<% if (resources.includes('dynamodb')) { %>import { AttributeType, BillingMode, Table as DynamoDbTable } from '@aws-cdk/aws-dynamodb';<% } %>
+<% if (resources.includes('s3')) { %>import { Bucket } from '@aws-cdk/aws-s3';<% } %>
+<% if (resources.includes('dynamodb') || resources.includes('s3')) { %>import { RemovalPolicy } from '@aws-cdk/core';<% } %>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -8,7 +9,7 @@ export class <%= projectName %>Stack extends cdk.Stack {
 
     const stage = process.env.STAGE || 'dev';
 
-    <% if (dynamodb) { %>// example dynamodb table
+    <% if (resources.includes('dynamodb')) { %>// example dynamodb table
     const exampleDatabaseName = this.node.tryGetContext('@db:example-table')+ '-' + stage;
 
     const exampleDatabase = new DynamoDbTable(this, exampleDatabaseName, {
@@ -21,7 +22,7 @@ export class <%= projectName %>Stack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });<% } %>
 
-    <% if (s3) { %>// example asset
+    <% if (resources.includes('s3')) { %>// example asset
     const assetsBucketName = this.node.tryGetContext('@s3:zimmermann-discount-media-assets') + '-' + stage;
 
     const assetsBucket = new Bucket(this, 'assets-bucket', {
