@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 <% if (dynamodb) { %>import { AttributeType, BillingMode, ProjectionType, Table as DynamoDbTable } from '@aws-cdk/aws-dynamodb';<% } %>
+<% if (s3) { %>import { Bucket } from '@aws-cdk/aws-s3';<% } %>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -7,8 +8,26 @@ export class <%= projectName %>Stack extends cdk.Stack {
 
     const stage = process.env.STAGE || 'dev';
 
-    // example dynamodb table
+    <% if (dynamodb) { %>// example dynamodb table
     const exampleDatabaseName = this.node.tryGetContext('@db:example-table')+ '-' + stage;
+
+    const exampleDatabase = new DynamoDbTable(this, exampleDatabaseName, {
+      tableName: exampleDatabaseName,
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });<% } %>
+
+    <% if (s3) { %>// example asset
+    const assetsBucketName = this.node.tryGetContext('@s3:zimmermann-discount-media-assets') + '-' + stage;
+
+    const assetsBucket = new Bucket(this, 'assets-bucket', {
+      bucketName: assetsBucketName,
+      removalPolicy: RemovalPolicy.RETAIN,
+    });<% } %>
 
   }
 }

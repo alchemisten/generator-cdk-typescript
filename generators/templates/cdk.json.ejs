@@ -3,6 +3,7 @@
   "context": {
     "@aws-cdk/core:enableStackNameDuplicates": "true",
     "aws-cdk:enableDiffNoFail": "true",
-    "@db:example-table": "example-table",
+    <% if (dynamodb) { %>"@db:example-table": "example-table",<% } %>
+    <% if (s3) { %>"@s3:example-assets": "example-assets",<% } %>
   }
 }
