@@ -26,6 +26,11 @@ module.exports = class extends Generator {
         type: "confirm",
         name: "lambdas",
         message: "Would you like to use AWS Lambda?"
+      },
+      {
+        type: "confirm",
+        name: "dynamodb",
+        message: "Would you like to use DynamoDB?"
       }
     ]);
   }
@@ -35,7 +40,7 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    const { projectName } = this.answers;
+    const { projectName, lambdas, dynamodb } = this.answers;
 
     const projectNameLispCase = projectName
         .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -54,6 +59,22 @@ module.exports = class extends Generator {
     );
 
     this.fs.copyTpl(
+        this.templatePath('README.md'),
+        this.destinationPath('README.md'),
+    );
+
+    this.fs.copyTpl(
+        this.templatePath('jest.config.js'),
+        this.destinationPath('jest.config.js'),
+    );
+
+    this.fs.copyTpl(
+        this.templatePath('cdk.json.ejs'),
+        this.destinationPath('cdk.json'),
+        { projectNameLispCase }
+    );
+
+    this.fs.copyTpl(
         this.templatePath('cdk-stack/bin/cdk.ts.ejs'),
         this.destinationPath(`cdk-stack/bin/${projectNameLispCase}.ts`),
         { projectName, projectNameLispCase }
@@ -62,7 +83,12 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
         this.templatePath('cdk-stack/lib/stack.ts.ejs'),
         this.destinationPath(`cdk-stack/lib/${projectNameLispCase}-stack.ts`),
-        { projectName }
+        { projectName, dynamodb }
+    );
+
+    lambdas && this.fs.copyTpl(
+        this.templatePath('src/lambdas/example-lambda/index.ts.ejs'),
+        this.destinationPath(`src/lambdas/example-lambda/index.ts`)
     );
   }
 

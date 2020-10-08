@@ -1,10 +1,14 @@
 import * as cdk from '@aws-cdk/core';
+<% if (dynamodb) { %>import { AttributeType, BillingMode, ProjectionType, Table as DynamoDbTable } from '@aws-cdk/aws-dynamodb';<% } %>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const stage = process.env.STAGE || 'dev';
+
+    // example dynamodb table
+    const exampleDatabaseName = this.node.tryGetContext('@db:example-table')+ '-' + stage;
 
   }
 }
