@@ -145,7 +145,7 @@ module.exports = class extends Generator {
         this.destinationPath(`cdk-stack/lib/utils.ts`),
     );
   }
-  
+
   installingDevDependencies() {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
@@ -185,8 +185,8 @@ const createCdkJsonContext = (resources) => {
   resources.forEach((resource, index) => {
     if(resource in contextArr) {
       contextStr += contextArr[resource] + ',';
-      if(resource.length-1 !== index) {
-        contextStr += '\n';
+      if(resources.length > 1 && resources.length - 1 !== index) {
+        contextStr += '\n    ';
       }
     }
   })
