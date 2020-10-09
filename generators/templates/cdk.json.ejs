@@ -1,11 +1,8 @@
 {
   "app": "npx ts-node cdk-stack/bin/<%= projectNameLispCase %>.ts",
   "context": {
+    <%- cdkJsonContext %>
     "@aws-cdk/core:enableStackNameDuplicates": "true",
-    "aws-cdk:enableDiffNoFail": "true"<% if (resources.includes('s3') || resources.includes('sqs') || resources.includes('dynamodb')) { %>,<% } %>
-    <% if (resources.includes('dynamodb')) { %>"@db:example-table": "example-table"<% } %><% if ( resources.includes('dynamodb') && (resources.includes('s3') || resources.includes('sqs'))) { %>,<% } -%>
-    <% if (resources.includes('s3')) { %>"@s3:example-assets": "example-assets"<% } %><% if ( resources.includes('s3') && resources.includes('sqs')) { %>,<% } -%>
-    <% if (resources.includes('sqs')) { %>"example_queue_name": "example-queue-name"<% } %><% if ( resources.includes('sqs') && resources.includes('certificate')) { %>,<% } -%>
-    <% if (resources.includes('certificate')) { %>"example_certificate": "arn:aws:acm:us-east-1:XXXXXXXXX:certificate/03a94885-481b-442c-97d6-e69587ba48ef"<% } %>
+    "aws-cdk:enableDiffNoFail": "true"
   }
 }

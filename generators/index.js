@@ -63,6 +63,7 @@ module.exports = class extends Generator {
 
   writing() {
     const { projectName, resources } = this.answers;
+    const cdkJsonContext = createCdkJsonContext(resources);
 
     const projectNameLispCase = projectName
         .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -98,7 +99,7 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
         this.templatePath('cdk.json.ejs'),
         this.destinationPath('cdk.json'),
-        { projectNameLispCase, resources }
+        { projectNameLispCase, resources, cdkJsonContext }
     );
 
     this.fs.copyTpl(
@@ -140,21 +141,11 @@ module.exports = class extends Generator {
     );
 
     resources.includes('api') && this.fs.copyTpl(
-        this.templatePath('cdk-stack/lib/constructs/assets-cdn.ts'),
-        this.destinationPath(`cdk-stack/lib/constructs/assets-cdn.ts`),
-    );
-
-    resources.includes('api') && this.fs.copyTpl(
-        this.templatePath('cdk-stack/lib/constructs/zone-distribution.ts'),
-        this.destinationPath(`cdk-stack/lib/constructs/zone-distribution.ts`),
-    );
-
-    resources.includes('api') && this.fs.copyTpl(
         this.templatePath('cdk-stack/lib/utils.ts'),
         this.destinationPath(`cdk-stack/lib/utils.ts`),
     );
   }
-
+  
   installingDevDependencies() {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
@@ -180,3 +171,26 @@ module.exports = class extends Generator {
   }
 
 };
+
+const createCdkJsonContext = (resources) => {
+  const contextArr = {
+    'dynamodb': '"@db:example-table": "example-table"',
+    's3': '"@s3:example-assets": "example-assets"',
+    'sqs': '"example_queue_name": "example-queue-name"',
+    'certificate': '"example_certificate": "arn:aws:acm:us-east-1:XXXXXXXXX:certificate/03a94885-481b-442c-97d6-e69587ba48ef"',
+  }
+
+  let contextStr = '';
+
+  resources.forEach((resource, index) => {
+    if(resource in contextArr) {
+      contextStr += contextArr[resource] + ',';
+      if(resource.length-1 !== index) {
+        contextStr += '\n';
+      }
+    }
+  })
+
+  return contextStr;
+}
+
