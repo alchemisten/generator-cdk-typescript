@@ -32,8 +32,10 @@ export class <%= projectName %>Stack extends cdk.Stack {
     });<% } %>
 
     <% if (resources.includes('sqs')) { %>// example queue
-    const transactionSucceededQueue = new Queue(this, transactionSucceededQueueName, {
-      queueName: transactionSucceededQueueName,
+    const exampleQueueName= this.node.tryGetContext('example_queue_name') + '-' + stage;
+
+    const exampleQueue = new Queue(this, exampleQueueName, {
+      queueName: exampleQueueName,
       visibilityTimeout: Duration.minutes(7),
     });<% } %>
 
