@@ -119,7 +119,7 @@ module.exports = class extends Generator {
         this.destinationPath(`src/lambdas/tsconfig.json`),
     );
   }
-
+  /*
   installingDevDependencies() {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
@@ -143,5 +143,6 @@ module.exports = class extends Generator {
     this.yarnInstall(['aws-sdk']);
     this.yarnInstall(['cdkdx']);
   }
+  */
 
 };

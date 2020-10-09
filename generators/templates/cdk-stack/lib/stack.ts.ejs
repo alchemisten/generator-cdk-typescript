@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-<% if (resources.includes('dynamodb')) { %>import { AttributeType, BillingMode, Table as DynamoDbTable } from "@aws-cdk/aws-dynamodb";<% } %>
-<% if (resources.includes('s3')) { %>import { Bucket } from "@aws-cdk/aws-s3"<% } %>
-<% if (resources.includes('s3') || resources.includes('dynamodb')) { %>import { RemovalPolicy } from "@aws-cdk/core";<% } %>
-<% if (resources.includes('sqs')) { %>import { Queue } from '@aws-cdk/aws-sqs';<% } %>
+<% if (resources.includes('dynamodb')) { %>import { AttributeType, BillingMode, Table as DynamoDbTable } from "@aws-cdk/aws-dynamodb";<% } -%>
+<% if (resources.includes('s3')) { %>import { Bucket } from "@aws-cdk/aws-s3"<% } -%>
+<% if (resources.includes('s3') || resources.includes('dynamodb')) { %>import { RemovalPolicy } from "@aws-cdk/core";<% } -%>
+<% if (resources.includes('sqs')) { %>import { Queue } from '@aws-cdk/aws-sqs';<% } -%>
+<% if (resources.includes('certificate')) { %>import { Certificate } from '@aws-cdk/aws-certificatemanager';<% } %>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -38,6 +39,17 @@ export class <%= projectName %>Stack extends cdk.Stack {
       queueName: exampleQueueName,
       visibilityTimeout: Duration.minutes(7),
     });<% } %>
+
+    <% if (resources.includes('certificate')) { %>// example queue
+    const exampleCertificateArn = this.node.tryGetContext(
+      'example_certificate',
+    );
+
+    const apiDomainCertificate = Certificate.fromCertificateArn(
+      this,
+      `example_gateway_cert`,
+      exampleCertificateArn,
+    );<% } %>
 
   }
 }
