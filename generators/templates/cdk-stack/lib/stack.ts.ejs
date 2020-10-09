@@ -1,7 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-<% resources.includes('dynamodb') ? 'import { AttributeType, BillingMode, Table as DynamoDbTable } from "@aws-cdk/aws-dynamodb";' : '' -%>
-<% resources.includes('s3') ? 'import { Bucket } from "@aws-cdk/aws-s3"' : '' -%>
-<% resources.includes('dynamodb') || resources.includes('s3') ? 'import { RemovalPolicy } from "@aws-cdk/core";' : '' -%>
+<% if (resources.includes('dynamodb')) { %>import { AttributeType, BillingMode, Table as DynamoDbTable } from "@aws-cdk/aws-dynamodb";<% } %>
+<% if (resources.includes('s3')) { %>import { Bucket } from "@aws-cdk/aws-s3"<% } %>
+<% if (resources.includes('s3') || resources.includes('dynamodb')) { %>import { RemovalPolicy } from "@aws-cdk/core";<% } %>
+<% if (resources.includes('sqs')) { %>import { Queue } from '@aws-cdk/aws-sqs';<% } %>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -28,6 +29,12 @@ export class <%= projectName %>Stack extends cdk.Stack {
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: assetsBucketName,
       removalPolicy: RemovalPolicy.RETAIN,
+    });<% } %>
+
+    <% if (resources.includes('sqs')) { %>// example queue
+    const transactionSucceededQueue = new Queue(this, transactionSucceededQueueName, {
+      queueName: transactionSucceededQueueName,
+      visibilityTimeout: Duration.minutes(7),
     });<% } %>
 
   }

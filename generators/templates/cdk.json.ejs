@@ -5,5 +5,6 @@
     "aws-cdk:enableDiffNoFail": "true",
     <%_ if (resources.includes('dynamodb')) { _%>"@db:example-table": "example-table",<%_ } _%>
     <%_ if (resources.includes('s3')) { _%>"@s3:example-assets": "example-assets",<%_ } _%>
+    <%_ if (resources.includes('sqs')) { _%>"example_queue_name": "example-queue-name",<%_ } _%>
   }
 }

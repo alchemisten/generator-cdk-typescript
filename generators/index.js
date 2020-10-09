@@ -38,7 +38,16 @@ module.exports = class extends Generator {
           name: 'Simple Cloud Storage (S3)',
           value: 's3',
           checked: false
-        }]
+        },{
+          name: 'Simple Queue Service (SQS)',
+          value: 'sqs',
+          checked: false
+        },{
+          name: 'Certificate Manager',
+          value: 'certificate',
+          checked: false
+        },
+        ]
       },
     ]);
   }
