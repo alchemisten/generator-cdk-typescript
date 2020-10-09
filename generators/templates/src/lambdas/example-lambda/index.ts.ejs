@@ -1,3 +1,10 @@
-export const handler: LambdaExampleHandler = async (event, context) => {
+import 'source-map-support';
+import {APIGatewayProxyHandler, APIGatewayEvent} from 'aws-lambda';
+import { EnvironmentNames } from '../shared/constants';
 
-}
+
+export const handler: APIGatewayProxyHandler = async (_: APIGatewayEvent) => {
+
+};
+
+

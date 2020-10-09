@@ -11,9 +11,7 @@ import {
   SecurityPolicy, TokenAuthorizer
 } from '@aws-cdk/aws-apigateway';
 import { ApiGatewayDomain } from '@aws-cdk/aws-route53-targets';
-import { ZoneDistribution } from './zone-distribution';
 import { EnvironmentNames } from '../../../src/lambdas/shared/constants';
-import { AccountRecovery, UserPool } from '@aws-cdk/aws-cognito';
 
 export interface <%= projectName %>APIProps {
   stage: string;
@@ -46,50 +44,25 @@ export class <%= projectName %>API extends Construct {
 
     // domain configuration
     const apiDomain = new DomainName( this, 'api-domain', {
-      domainName: zoneDistribution.apiDomainName,
-      certificate: zoneDistribution.apiCertificate,
-      endpointType: EndpointType.EDGE,
-      securityPolicy: SecurityPolicy.TLS_1_2
+
     } );
 
-    apiDomain.addBasePathMapping( restApi, { basePath: '' } );
+    // example api function
+    const exampleResource = restApi.root.addResource( 'example' );
 
-    const record = new ARecord( this, 'api-record', {
-      zone: zoneDistribution.apiHostedZone,
-      recordName: zoneDistribution.apiDomainName,
-      target: RecordTarget.fromAlias( new ApiGatewayDomain( apiDomain ) )
-    } );
-
-    const userPool = new UserPool(this, 'userpool', {
-      userPoolName: `<%= projectNameLispCase %>-${stage}`,
-      accountRecovery: AccountRecovery.EMAIL_ONLY,
-      passwordPolicy: {
-        minLength: 6,
-        requireUppercase: true,
-        requireSymbols: true,
-        requireDigits: true
-      },
-      selfSignUpEnabled: true,
-      signInAliases: {
-        username: true,
-        preferredUsername: true, // TODO CHECK if this is correct...
-        email: true
-      }
-    });
-
-    const managementAppClient = userPool.addClient('<%= projectNameLispCase %>-app-client', {
-
-    });
-
-    const authorizerFunction = new LambdaFunction(this, 'authorizer', {
+    const getExampleData = new LambdaFunction(this, 'getExampleData', {
       runtime,
       handler: 'index.handler',
-      code: Code.fromAsset( 'lib/lambdas/api-authorizer' ),
+      code: Code.fromAsset( 'lib/lambdas/example-lambda' ),
       environment: {
-        [EnvironmentNames.AUTH_USER_POOL_ID]: userPool.userPoolId,
-        [EnvironmentNames.AUTH_APP_CLIENT_ID]: managementAppClient.userPoolClientId
-      }
+        [EnvironmentNames.OFFERS_TABLE]: offersDatabase.tableName
+      },
     });
+
+    exampleResource.addMethod('GET', new LambdaIntegration(getExampleData), {
+      //example
+    });
+
 
   }
 }

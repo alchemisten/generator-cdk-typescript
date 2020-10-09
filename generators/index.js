@@ -123,6 +123,16 @@ module.exports = class extends Generator {
         this.destinationPath(`src/lambdas/tsconfig.json`),
     );
 
+    resources.includes('lambda') && this.fs.copyTpl(
+        this.templatePath('src/lambdas/shared/response.ts'),
+        this.destinationPath(`src/lambdas/shared/response.ts`),
+    );
+
+    resources.includes('lambda') && this.fs.copyTpl(
+        this.templatePath('src/lambdas/shared/constants.ts'),
+        this.destinationPath(`src/lambdas/shared/constants.ts`),
+    );
+
     resources.includes('api') && this.fs.copyTpl(
         this.templatePath('cdk-stack/lib/constructs/api.ts.ejs'),
         this.destinationPath(`cdk-stack/lib/constructs/${projectNameLispCase}-api.ts.ejs`),
