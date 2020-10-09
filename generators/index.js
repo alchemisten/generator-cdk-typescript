@@ -46,6 +46,10 @@ module.exports = class extends Generator {
           name: 'Certificate Manager',
           value: 'certificate',
           checked: false
+        },{
+          name: 'API Gateway',
+          value: 'api',
+          checked: false
         },
         ]
       },
@@ -118,8 +122,29 @@ module.exports = class extends Generator {
         this.templatePath('src/lambdas/tsconfig.json'),
         this.destinationPath(`src/lambdas/tsconfig.json`),
     );
+
+    resources.includes('api') && this.fs.copyTpl(
+        this.templatePath('cdk-stack/lib/constructs/api.ts.ejs'),
+        this.destinationPath(`cdk-stack/lib/constructs/${projectNameLispCase}-api.ts.ejs`),
+        { projectName, projectNameLispCase }
+    );
+
+    resources.includes('api') && this.fs.copyTpl(
+        this.templatePath('cdk-stack/lib/constructs/assets-cdn.ts'),
+        this.destinationPath(`cdk-stack/lib/constructs/assets-cdn.ts`),
+    );
+
+    resources.includes('api') && this.fs.copyTpl(
+        this.templatePath('cdk-stack/lib/constructs/zone-distribution.ts'),
+        this.destinationPath(`cdk-stack/lib/constructs/zone-distribution.ts`),
+    );
+
+    resources.includes('api') && this.fs.copyTpl(
+        this.templatePath('cdk-stack/lib/utils.ts'),
+        this.destinationPath(`cdk-stack/lib/utils.ts`),
+    );
   }
-  /*
+
   installingDevDependencies() {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
@@ -143,6 +168,5 @@ module.exports = class extends Generator {
     this.yarnInstall(['aws-sdk']);
     this.yarnInstall(['cdkdx']);
   }
-  */
 
 };
