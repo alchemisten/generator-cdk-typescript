@@ -1,8 +1,8 @@
 {
-    "name": "<%= projectName %>",
+    "name": "<%= scope %><%= projectNameLispCase %>",
     "version": "1.0.0",
     "bin": {
-      "<%= projectName %>": "cdk-stack/bin/<%= projectNameLispCase %>.js"
+      "<%= projectNameLispCase %>": "cdk-stack/bin/<%= projectNameLispCase %>.js"
     },
     "scripts": {
       "build": "cdkdx build",
@@ -14,6 +14,7 @@
     "devDependencies": {
     },
     "dependencies": {
+        <%- cdkDependencies %>
     },
     "externals": [
       "aws-sdk"

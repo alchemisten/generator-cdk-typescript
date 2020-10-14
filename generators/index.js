@@ -9,6 +9,8 @@ module.exports = class extends Generator {
   }
 
   async prompting() {
+    const cdkVersion = await latestVersion('@aws-cdk/core');
+
     this.answers = await this.prompt([
       {
         type: "input",
@@ -21,6 +23,27 @@ module.exports = class extends Generator {
           }
           return true;
         }
+      },
+      {
+        type: "input",
+        name: "scope",
+        message: "Project scope, leave empty if none",
+        validate: function(scope){
+          if(scope.length === 0) {
+            return true;
+          }
+          const isScopeFormatted = /^@[a-z][a-z0-9]+(-[a-z0-9]+)*/.test(scope);
+          if(!isScopeFormatted) {
+            return "Scope must start with @ and have Lisp Case syntax starting with an alphabetic character";
+          }
+          return true;
+        }
+      },
+      {
+        type: 'input',
+        name: 'cdkVersion',
+        message: 'Which common version of CDK do you want to use',
+        default: cdkVersion
       },
       {
         type: 'checkbox',
@@ -56,13 +79,8 @@ module.exports = class extends Generator {
     ]);
   }
 
-  async gettingInfos() {
-    console.log("Fetching information...");
-    console.log(this.answers);
-  }
-
   writing() {
-    const { projectName, resources } = this.answers;
+    const { projectName, resources, cdkVersion, scope } = this.answers;
     const cdkJsonContext = createCdkJsonContext(resources);
 
     const projectNameLispCase = projectName
@@ -70,35 +88,74 @@ module.exports = class extends Generator {
         .replace(/([A-Z])([A-Z])(?=[a-z])/g, '$1-$2')
         .toLowerCase();
 
+    const cdkDependencies = resources.reduce((stack,r) => {
+      switch(r) {
+        case 'lambda': {
+          stack.push(`"@aws-cdk/aws-lambda": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-lambda-event-sources": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-lambda-nodejs": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-events": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-events-targets": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-iam": "${cdkVersion}"`);
+          break;
+        }
+        case 'dynamodb': {
+          stack.push(`"@aws-cdk/aws-dynamodb": "${cdkVersion}"`);
+          break;
+        }
+        case 's3': {
+          stack.push(`"@aws-cdk/aws-s3": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-s3-notifications": "${cdkVersion}"`);
+          break;
+        }
+        case 'sqs': {
+          stack.push(`"@aws-cdk/aws-sqs": "${cdkVersion}"`);
+          break;
+        }
+        case 'certificate': {
+          stack.push(`"@aws-cdk/aws-certificatemanager": "${cdkVersion}"`);
+          break;
+        }
+        case 'api': {
+          stack.push(`"@aws-cdk/aws-apigateway": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-route53": "${cdkVersion}"`);
+          stack.push(`"@aws-cdk/aws-route53-targets": "${cdkVersion}"`);
+          break;
+        }
+      }
+
+      return stack;
+    }, [`"@aws-cdk/aws-apigateway": "${cdkVersion}"`]).join(',\n');
+
     this.fs.copyTpl(
       this.templatePath('package.json.ejs'),
-      this.destinationPath('package.json'),
-      { projectName, projectNameLispCase }
+      this.destinationPath(`package.json`),
+      { projectName, projectNameLispCase, cdkVersion, cdkDependencies, scope: scope.trim().length > 0 ? scope+'/': '' }
     );
 
     this.fs.copyTpl(
         this.templatePath('tsconfig.json'),
-        this.destinationPath('tsconfig.json'),
+        this.destinationPath(`tsconfig.json`),
     );
 
     this.fs.copyTpl(
         this.templatePath('.gitignore'),
-        this.destinationPath('.gitignore'),
+        this.destinationPath(`.gitignore`),
     );
 
     this.fs.copyTpl(
         this.templatePath('README.md'),
-        this.destinationPath('README.md'),
+        this.destinationPath(`README.md`),
     );
 
     this.fs.copyTpl(
         this.templatePath('jest.config.js'),
-        this.destinationPath('jest.config.js'),
+        this.destinationPath(`jest.config.js`),
     );
 
     this.fs.copyTpl(
         this.templatePath('cdk.json.ejs'),
-        this.destinationPath('cdk.json'),
+        this.destinationPath(`cdk.json`),
         { projectNameLispCase, resources, cdkJsonContext }
     );
 
@@ -150,13 +207,10 @@ module.exports = class extends Generator {
     this.yarnInstall(['@aws-cdk/assert'], { 'dev': true });
     this.yarnInstall(['@types/jest'], { 'dev': true });
     this.yarnInstall(['@types/node'], { 'dev': true });
-    this.yarnInstall(['aws-cdk'], { 'dev': true });
     this.yarnInstall(['aws-lambda'], { 'dev': true });
     this.yarnInstall(['axios'], { 'dev': true });
     this.yarnInstall(['babel-jest'], { 'dev': true });
     this.yarnInstall(['jest'], { 'dev': true });
-    this.yarnInstall(['jsonwebtoken'], { 'dev': true });
-    this.yarnInstall(['jwk-to-pem'], { 'dev': true });
     this.yarnInstall(['source-map-support'], { 'dev': true });
     this.yarnInstall(['ts-jest'], { 'dev': true });
     this.yarnInstall(['ts-node'], { 'dev': true });
@@ -164,7 +218,6 @@ module.exports = class extends Generator {
   }
 
   installingDependencies() {
-    this.yarnInstall(['@aws-cdk/core']);
     this.yarnInstall(['@types/aws-lambda']);
     this.yarnInstall(['aws-sdk']);
     this.yarnInstall(['cdkdx']);
