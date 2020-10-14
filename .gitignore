@@ -1,1 +1,6 @@
+# Editors
+.idea
+.vscode
+
+# Package directories
 node_modules

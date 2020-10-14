@@ -193,7 +193,7 @@ module.exports = class extends Generator {
 
     resources.includes('api') && this.fs.copyTpl(
         this.templatePath('cdk-stack/lib/constructs/api.ts.ejs'),
-        this.destinationPath(`cdk-stack/lib/constructs/${projectNameLispCase}-api.ts.ejs`),
+        this.destinationPath(`cdk-stack/lib/constructs/${projectNameLispCase}-api.ts`),
         { projectName, projectNameLispCase }
     );
 
