@@ -30,7 +30,7 @@ export class <%= projectName %>Stack extends cdk.Stack {
     });<% } %>
 
     <% if (resources.includes('s3')) { %>// example asset
-    const assetsBucketName = this.node.tryGetContext('@s3:zimmermann-discount-media-assets') + '-' + stage;
+    const assetsBucketName = this.node.tryGetContext('@s3:assets') + '-' + stage;
 
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: assetsBucketName,
