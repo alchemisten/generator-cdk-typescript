@@ -73,6 +73,10 @@ module.exports = class extends Generator {
           name: 'API Gateway',
           value: 'api',
           checked: false
+        },{
+          name: 'Cloudwatch Dashboard',
+          value: 'dashboard',
+          checked: false
         },
         ]
       },
@@ -120,6 +124,10 @@ module.exports = class extends Generator {
           stack.push(`"@aws-cdk/aws-apigateway": "${cdkVersion}"`);
           stack.push(`"@aws-cdk/aws-route53": "${cdkVersion}"`);
           stack.push(`"@aws-cdk/aws-route53-targets": "${cdkVersion}"`);
+          break;
+        }
+        case 'dashboard': {
+          stack.push(`"@aws-cdk/aws-cloudwatch": "${cdkVersion}"`);
           break;
         }
       }
