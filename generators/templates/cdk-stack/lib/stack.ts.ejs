@@ -8,7 +8,9 @@ import { RemovalPolicy } from "@aws-cdk/core";<% } -%>
 <% if (resources.includes('sqs')) { %>
 import { Queue } from '@aws-cdk/aws-sqs';<% } -%>
 <% if (resources.includes('certificate')) { %>
-import { Certificate } from '@aws-cdk/aws-certificatemanager';<% } %>
+import { Certificate } from '@aws-cdk/aws-certificatemanager';<% } -%>
+<% if (resources.includes('dashboard')) { %>
+import { Dashboard, GraphWidget, Metric } from '@aws-cdk/aws-cloudwatch';<% } -%>
 
 export class <%= projectName %>Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -56,5 +58,26 @@ export class <%= projectName %>Stack extends cdk.Stack {
       exampleCertificateArn,
     );<% } %>
 
+    <% if (resources.includes('dashboard')) { %>// example dashboard
+    const dashboardName = `example-dashboard-${stage}`;
+    const namespace = 'example';
+    const metricName = 'example-metric'
+
+    const dashboard = new Dashboard(this, dashboardName, {dashboardName: dashboardName});
+
+    const exampleWidget = new GraphWidget({
+      title: metricName,
+      left: [new Metric({
+        namespace: namespace,
+        metricName: metricName,
+        dimensions: {
+          ClusterIdentifier: cdk.Fn.importValue(`${stage}-example:ClusterName`)
+        },
+          statistic: 'avg'
+        })]
+    });
+
+    dashboard.addWidgets(exampleWidget);
+    <% } %>
   }
 }
